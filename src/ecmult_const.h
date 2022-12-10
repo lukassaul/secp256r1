@@ -4,8 +4,8 @@
  * file COPYING or https://www.opensource.org/licenses/mit-license.php.*
  ***********************************************************************/
 
-#ifndef SECP256K1_ECMULT_CONST_H
-#define SECP256K1_ECMULT_CONST_H
+#ifndef SECP256R1_ECMULT_CONST_H
+#define SECP256R1_ECMULT_CONST_H
 
 #include "scalar.h"
 #include "group.h"
@@ -16,6 +16,6 @@
  * one because we internally sometimes add 2 to the number during the WNAF conversion.
  * A must not be infinity.
  */
-static void secp256k1_ecmult_const(secp256k1_gej *r, const secp256k1_ge *a, const secp256k1_scalar *q, int bits);
+static void secp256r1_ecmult_const(secp256r1_gej *r, const secp256r1_ge *a, const secp256r1_scalar *q, int bits);
 
-#endif /* SECP256K1_ECMULT_CONST_H */
+#endif /* SECP256R1_ECMULT_CONST_H */

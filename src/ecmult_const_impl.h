@@ -4,8 +4,8 @@
  * file COPYING or https://www.opensource.org/licenses/mit-license.php.*
  ***********************************************************************/
 
-#ifndef SECP256K1_ECMULT_CONST_IMPL_H
-#define SECP256K1_ECMULT_CONST_IMPL_H
+#ifndef SECP256R1_ECMULT_CONST_IMPL_H
+#define SECP256R1_ECMULT_CONST_IMPL_H
 
 #include "scalar.h"
 #include "group.h"
@@ -18,11 +18,11 @@
  *  coordinates as ge_storage points in pre, and stores the global Z in globalz.
  *  It only operates on tables sized for WINDOW_A wnaf multiples.
  */
-static void secp256k1_ecmult_odd_multiples_table_globalz_windowa(secp256k1_ge *pre, secp256k1_fe *globalz, const secp256k1_gej *a) {
-    secp256k1_fe zr[ECMULT_TABLE_SIZE(WINDOW_A)];
+static void secp256r1_ecmult_odd_multiples_table_globalz_windowa(secp256r1_ge *pre, secp256r1_fe *globalz, const secp256r1_gej *a) {
+    secp256r1_fe zr[ECMULT_TABLE_SIZE(WINDOW_A)];
 
-    secp256k1_ecmult_odd_multiples_table(ECMULT_TABLE_SIZE(WINDOW_A), pre, zr, globalz, a);
-    secp256k1_ge_table_set_globalz(ECMULT_TABLE_SIZE(WINDOW_A), pre, zr);
+    secp256r1_ecmult_odd_multiples_table(ECMULT_TABLE_SIZE(WINDOW_A), pre, zr, globalz, a);
+    secp256r1_ge_table_set_globalz(ECMULT_TABLE_SIZE(WINDOW_A), pre, zr);
 }
 
 /* This is like `ECMULT_TABLE_GET_GE` but is constant time */
@@ -32,12 +32,12 @@ static void secp256k1_ecmult_odd_multiples_table_globalz_windowa(secp256k1_ge *p
     int mask = (n) >> (sizeof(n) * CHAR_BIT - 1); \
     int abs_n = ((n) + mask) ^ mask; \
     int idx_n = abs_n >> 1; \
-    secp256k1_fe neg_y; \
+    secp256r1_fe neg_y; \
     VERIFY_CHECK(((n) & 1) == 1); \
     VERIFY_CHECK((n) >= -((1 << ((w)-1)) - 1)); \
     VERIFY_CHECK((n) <=  ((1 << ((w)-1)) - 1)); \
-    VERIFY_SETUP(secp256k1_fe_clear(&(r)->x)); \
-    VERIFY_SETUP(secp256k1_fe_clear(&(r)->y)); \
+    VERIFY_SETUP(secp256r1_fe_clear(&(r)->x)); \
+    VERIFY_SETUP(secp256r1_fe_clear(&(r)->y)); \
     /* Unconditionally set r->x = (pre)[m].x. r->y = (pre)[m].y. because it's either the correct one \
      * or will get replaced in the later iterations, this is needed to make sure `r` is initialized. */ \
     (r)->x = (pre)[m].x; \
@@ -45,12 +45,12 @@ static void secp256k1_ecmult_odd_multiples_table_globalz_windowa(secp256k1_ge *p
     for (m = 1; m < ECMULT_TABLE_SIZE(w); m++) { \
         /* This loop is used to avoid secret data in array indices. See
          * the comment in ecmult_gen_impl.h for rationale. */ \
-        secp256k1_fe_cmov(&(r)->x, &(pre)[m].x, m == idx_n); \
-        secp256k1_fe_cmov(&(r)->y, &(pre)[m].y, m == idx_n); \
+        secp256r1_fe_cmov(&(r)->x, &(pre)[m].x, m == idx_n); \
+        secp256r1_fe_cmov(&(r)->y, &(pre)[m].y, m == idx_n); \
     } \
     (r)->infinity = 0; \
-    secp256k1_fe_negate(&neg_y, &(r)->y, 1); \
-    secp256k1_fe_cmov(&(r)->y, &neg_y, (n) != abs_n); \
+    secp256r1_fe_negate(&neg_y, &(r)->y, 1); \
+    secp256r1_fe_cmov(&(r)->y, &neg_y, (n) != abs_n); \
 } while(0)
 
 /** Convert a number to WNAF notation.
@@ -66,7 +66,7 @@ static void secp256k1_ecmult_odd_multiples_table_globalz_windowa(secp256k1_ge *p
  *
  *  Numbers reference steps of `Algorithm SPA-resistant Width-w NAF with Odd Scalar` on pp. 335
  */
-static int secp256k1_wnaf_const(int *wnaf, const secp256k1_scalar *scalar, int w, int size) {
+static int secp256r1_wnaf_const(int *wnaf, const secp256r1_scalar *scalar, int w, int size) {
     int global_sign;
     int skew;
     int word = 0;
@@ -76,7 +76,7 @@ static int secp256k1_wnaf_const(int *wnaf, const secp256k1_scalar *scalar, int w
     int u;
 
     int flip;
-    secp256k1_scalar s = *scalar;
+    secp256r1_scalar s = *scalar;
 
     VERIFY_CHECK(w > 0);
     VERIFY_CHECK(size > 0);
@@ -93,18 +93,18 @@ static int secp256k1_wnaf_const(int *wnaf, const secp256k1_scalar *scalar, int w
      * particular, to ensure that the outputs from the endomorphism-split fit into
      * 128 bits). If we negate, the parity of our number flips, affecting whether
      * we want to add to the scalar to ensure that it's odd. */
-    flip = secp256k1_scalar_is_high(&s);
-    skew = flip ^ secp256k1_scalar_is_even(&s);
-    secp256k1_scalar_cadd_bit(&s, 0, skew);
-    global_sign = secp256k1_scalar_cond_negate(&s, flip);
+    flip = secp256r1_scalar_is_high(&s);
+    skew = flip ^ secp256r1_scalar_is_even(&s);
+    secp256r1_scalar_cadd_bit(&s, 0, skew);
+    global_sign = secp256r1_scalar_cond_negate(&s, flip);
 
     /* 4 */
-    u_last = secp256k1_scalar_shr_int(&s, w);
+    u_last = secp256r1_scalar_shr_int(&s, w);
     do {
         int even;
 
         /* 4.1 4.4 */
-        u = secp256k1_scalar_shr_int(&s, w);
+        u = secp256r1_scalar_shr_int(&s, w);
         /* 4.2 */
         even = ((u & 1) == 0);
         /* In contrast to the original algorithm, u_last is always > 0 and
@@ -125,21 +125,21 @@ static int secp256k1_wnaf_const(int *wnaf, const secp256k1_scalar *scalar, int w
     } while (word * w < size);
     wnaf[word] = u * global_sign;
 
-    VERIFY_CHECK(secp256k1_scalar_is_zero(&s));
+    VERIFY_CHECK(secp256r1_scalar_is_zero(&s));
     VERIFY_CHECK(word == WNAF_SIZE_BITS(size, w));
     return skew;
 }
 
-static void secp256k1_ecmult_const(secp256k1_gej *r, const secp256k1_ge *a, const secp256k1_scalar *scalar, int size) {
-    secp256k1_ge pre_a[ECMULT_TABLE_SIZE(WINDOW_A)];
-    secp256k1_ge tmpa;
-    secp256k1_fe Z;
+static void secp256r1_ecmult_const(secp256r1_gej *r, const secp256r1_ge *a, const secp256r1_scalar *scalar, int size) {
+    secp256r1_ge pre_a[ECMULT_TABLE_SIZE(WINDOW_A)];
+    secp256r1_ge tmpa;
+    secp256r1_fe Z;
 
     int skew_1;
-    secp256k1_ge pre_a_lam[ECMULT_TABLE_SIZE(WINDOW_A)];
+    secp256r1_ge pre_a_lam[ECMULT_TABLE_SIZE(WINDOW_A)];
     int wnaf_lam[1 + WNAF_SIZE(WINDOW_A - 1)];
     int skew_lam;
-    secp256k1_scalar q_1, q_lam;
+    secp256r1_scalar q_1, q_lam;
     int wnaf_1[1 + WNAF_SIZE(WINDOW_A - 1)];
 
     int i;
@@ -149,30 +149,30 @@ static void secp256k1_ecmult_const(secp256k1_gej *r, const secp256k1_ge *a, cons
     if (size > 128) {
         rsize = 128;
         /* split q into q_1 and q_lam (where q = q_1 + q_lam*lambda, and q_1 and q_lam are ~128 bit) */
-        secp256k1_scalar_split_lambda(&q_1, &q_lam, scalar);
-        skew_1   = secp256k1_wnaf_const(wnaf_1,   &q_1,   WINDOW_A - 1, 128);
-        skew_lam = secp256k1_wnaf_const(wnaf_lam, &q_lam, WINDOW_A - 1, 128);
+        secp256r1_scalar_split_lambda(&q_1, &q_lam, scalar);
+        skew_1   = secp256r1_wnaf_const(wnaf_1,   &q_1,   WINDOW_A - 1, 128);
+        skew_lam = secp256r1_wnaf_const(wnaf_lam, &q_lam, WINDOW_A - 1, 128);
     } else
     {
-        skew_1   = secp256k1_wnaf_const(wnaf_1, scalar, WINDOW_A - 1, size);
+        skew_1   = secp256r1_wnaf_const(wnaf_1, scalar, WINDOW_A - 1, size);
         skew_lam = 0;
     }
 
     /* Calculate odd multiples of a.
      * All multiples are brought to the same Z 'denominator', which is stored
-     * in Z. Due to secp256k1' isomorphism we can do all operations pretending
+     * in Z. Due to secp256r1' isomorphism we can do all operations pretending
      * that the Z coordinate was 1, use affine addition formulae, and correct
      * the Z coordinate of the result once at the end.
      */
     VERIFY_CHECK(!a->infinity);
-    secp256k1_gej_set_ge(r, a);
-    secp256k1_ecmult_odd_multiples_table_globalz_windowa(pre_a, &Z, r);
+    secp256r1_gej_set_ge(r, a);
+    secp256r1_ecmult_odd_multiples_table_globalz_windowa(pre_a, &Z, r);
     for (i = 0; i < ECMULT_TABLE_SIZE(WINDOW_A); i++) {
-        secp256k1_fe_normalize_weak(&pre_a[i].y);
+        secp256r1_fe_normalize_weak(&pre_a[i].y);
     }
     if (size > 128) {
         for (i = 0; i < ECMULT_TABLE_SIZE(WINDOW_A); i++) {
-            secp256k1_ge_mul_lambda(&pre_a_lam[i], &pre_a[i]);
+            secp256r1_ge_mul_lambda(&pre_a_lam[i], &pre_a[i]);
         }
 
     }
@@ -183,49 +183,49 @@ static void secp256k1_ecmult_const(secp256k1_gej *r, const secp256k1_ge *a, cons
     i = wnaf_1[WNAF_SIZE_BITS(rsize, WINDOW_A - 1)];
     VERIFY_CHECK(i != 0);
     ECMULT_CONST_TABLE_GET_GE(&tmpa, pre_a, i, WINDOW_A);
-    secp256k1_gej_set_ge(r, &tmpa);
+    secp256r1_gej_set_ge(r, &tmpa);
     if (size > 128) {
         i = wnaf_lam[WNAF_SIZE_BITS(rsize, WINDOW_A - 1)];
         VERIFY_CHECK(i != 0);
         ECMULT_CONST_TABLE_GET_GE(&tmpa, pre_a_lam, i, WINDOW_A);
-        secp256k1_gej_add_ge(r, r, &tmpa);
+        secp256r1_gej_add_ge(r, r, &tmpa);
     }
     /* remaining loop iterations */
     for (i = WNAF_SIZE_BITS(rsize, WINDOW_A - 1) - 1; i >= 0; i--) {
         int n;
         int j;
         for (j = 0; j < WINDOW_A - 1; ++j) {
-            secp256k1_gej_double(r, r);
+            secp256r1_gej_double(r, r);
         }
 
         n = wnaf_1[i];
         ECMULT_CONST_TABLE_GET_GE(&tmpa, pre_a, n, WINDOW_A);
         VERIFY_CHECK(n != 0);
-        secp256k1_gej_add_ge(r, r, &tmpa);
+        secp256r1_gej_add_ge(r, r, &tmpa);
         if (size > 128) {
             n = wnaf_lam[i];
             ECMULT_CONST_TABLE_GET_GE(&tmpa, pre_a_lam, n, WINDOW_A);
             VERIFY_CHECK(n != 0);
-            secp256k1_gej_add_ge(r, r, &tmpa);
+            secp256r1_gej_add_ge(r, r, &tmpa);
         }
     }
 
     {
         /* Correct for wNAF skew */
-        secp256k1_gej tmpj;
+        secp256r1_gej tmpj;
 
-        secp256k1_ge_neg(&tmpa, &pre_a[0]);
-        secp256k1_gej_add_ge(&tmpj, r, &tmpa);
-        secp256k1_gej_cmov(r, &tmpj, skew_1);
+        secp256r1_ge_neg(&tmpa, &pre_a[0]);
+        secp256r1_gej_add_ge(&tmpj, r, &tmpa);
+        secp256r1_gej_cmov(r, &tmpj, skew_1);
 
         if (size > 128) {
-            secp256k1_ge_neg(&tmpa, &pre_a_lam[0]);
-            secp256k1_gej_add_ge(&tmpj, r, &tmpa);
-            secp256k1_gej_cmov(r, &tmpj, skew_lam);
+            secp256r1_ge_neg(&tmpa, &pre_a_lam[0]);
+            secp256r1_gej_add_ge(&tmpj, r, &tmpa);
+            secp256r1_gej_cmov(r, &tmpj, skew_lam);
         }
     }
 
-    secp256k1_fe_mul(&r->z, &r->z, &Z);
+    secp256r1_fe_mul(&r->z, &r->z, &Z);
 }
 
-#endif /* SECP256K1_ECMULT_CONST_IMPL_H */
+#endif /* SECP256R1_ECMULT_CONST_IMPL_H */

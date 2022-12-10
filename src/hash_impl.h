@@ -4,8 +4,8 @@
  * file COPYING or https://www.opensource.org/licenses/mit-license.php.*
  ***********************************************************************/
 
-#ifndef SECP256K1_HASH_IMPL_H
-#define SECP256K1_HASH_IMPL_H
+#ifndef SECP256R1_HASH_IMPL_H
+#define SECP256R1_HASH_IMPL_H
 
 #include "hash.h"
 #include "util.h"
@@ -28,7 +28,7 @@
     (h) = t1 + t2; \
 } while(0)
 
-static void secp256k1_sha256_initialize(secp256k1_sha256 *hash) {
+static void secp256r1_sha256_initialize(secp256r1_sha256 *hash) {
     hash->s[0] = 0x6a09e667ul;
     hash->s[1] = 0xbb67ae85ul;
     hash->s[2] = 0x3c6ef372ul;
@@ -41,26 +41,26 @@ static void secp256k1_sha256_initialize(secp256k1_sha256 *hash) {
 }
 
 /** Perform one SHA-256 transformation, processing 16 big endian 32-bit words. */
-static void secp256k1_sha256_transform(uint32_t* s, const unsigned char* buf) {
+static void secp256r1_sha256_transform(uint32_t* s, const unsigned char* buf) {
     uint32_t a = s[0], b = s[1], c = s[2], d = s[3], e = s[4], f = s[5], g = s[6], h = s[7];
     uint32_t w0, w1, w2, w3, w4, w5, w6, w7, w8, w9, w10, w11, w12, w13, w14, w15;
 
-    Round(a, b, c, d, e, f, g, h, 0x428a2f98,  w0 = secp256k1_read_be32(&buf[0]));
-    Round(h, a, b, c, d, e, f, g, 0x71374491,  w1 = secp256k1_read_be32(&buf[4]));
-    Round(g, h, a, b, c, d, e, f, 0xb5c0fbcf,  w2 = secp256k1_read_be32(&buf[8]));
-    Round(f, g, h, a, b, c, d, e, 0xe9b5dba5,  w3 = secp256k1_read_be32(&buf[12]));
-    Round(e, f, g, h, a, b, c, d, 0x3956c25b,  w4 = secp256k1_read_be32(&buf[16]));
-    Round(d, e, f, g, h, a, b, c, 0x59f111f1,  w5 = secp256k1_read_be32(&buf[20]));
-    Round(c, d, e, f, g, h, a, b, 0x923f82a4,  w6 = secp256k1_read_be32(&buf[24]));
-    Round(b, c, d, e, f, g, h, a, 0xab1c5ed5,  w7 = secp256k1_read_be32(&buf[28]));
-    Round(a, b, c, d, e, f, g, h, 0xd807aa98,  w8 = secp256k1_read_be32(&buf[32]));
-    Round(h, a, b, c, d, e, f, g, 0x12835b01,  w9 = secp256k1_read_be32(&buf[36]));
-    Round(g, h, a, b, c, d, e, f, 0x243185be, w10 = secp256k1_read_be32(&buf[40]));
-    Round(f, g, h, a, b, c, d, e, 0x550c7dc3, w11 = secp256k1_read_be32(&buf[44]));
-    Round(e, f, g, h, a, b, c, d, 0x72be5d74, w12 = secp256k1_read_be32(&buf[48]));
-    Round(d, e, f, g, h, a, b, c, 0x80deb1fe, w13 = secp256k1_read_be32(&buf[52]));
-    Round(c, d, e, f, g, h, a, b, 0x9bdc06a7, w14 = secp256k1_read_be32(&buf[56]));
-    Round(b, c, d, e, f, g, h, a, 0xc19bf174, w15 = secp256k1_read_be32(&buf[60]));
+    Round(a, b, c, d, e, f, g, h, 0x428a2f98,  w0 = secp256r1_read_be32(&buf[0]));
+    Round(h, a, b, c, d, e, f, g, 0x71374491,  w1 = secp256r1_read_be32(&buf[4]));
+    Round(g, h, a, b, c, d, e, f, 0xb5c0fbcf,  w2 = secp256r1_read_be32(&buf[8]));
+    Round(f, g, h, a, b, c, d, e, 0xe9b5dba5,  w3 = secp256r1_read_be32(&buf[12]));
+    Round(e, f, g, h, a, b, c, d, 0x3956c25b,  w4 = secp256r1_read_be32(&buf[16]));
+    Round(d, e, f, g, h, a, b, c, 0x59f111f1,  w5 = secp256r1_read_be32(&buf[20]));
+    Round(c, d, e, f, g, h, a, b, 0x923f82a4,  w6 = secp256r1_read_be32(&buf[24]));
+    Round(b, c, d, e, f, g, h, a, 0xab1c5ed5,  w7 = secp256r1_read_be32(&buf[28]));
+    Round(a, b, c, d, e, f, g, h, 0xd807aa98,  w8 = secp256r1_read_be32(&buf[32]));
+    Round(h, a, b, c, d, e, f, g, 0x12835b01,  w9 = secp256r1_read_be32(&buf[36]));
+    Round(g, h, a, b, c, d, e, f, 0x243185be, w10 = secp256r1_read_be32(&buf[40]));
+    Round(f, g, h, a, b, c, d, e, 0x550c7dc3, w11 = secp256r1_read_be32(&buf[44]));
+    Round(e, f, g, h, a, b, c, d, 0x72be5d74, w12 = secp256r1_read_be32(&buf[48]));
+    Round(d, e, f, g, h, a, b, c, 0x80deb1fe, w13 = secp256r1_read_be32(&buf[52]));
+    Round(c, d, e, f, g, h, a, b, 0x9bdc06a7, w14 = secp256r1_read_be32(&buf[56]));
+    Round(b, c, d, e, f, g, h, a, 0xc19bf174, w15 = secp256r1_read_be32(&buf[60]));
 
     Round(a, b, c, d, e, f, g, h, 0xe49b69c1, w0 += sigma1(w14) + w9 + sigma0(w1));
     Round(h, a, b, c, d, e, f, g, 0xefbe4786, w1 += sigma1(w15) + w10 + sigma0(w2));
@@ -123,7 +123,7 @@ static void secp256k1_sha256_transform(uint32_t* s, const unsigned char* buf) {
     s[7] += h;
 }
 
-static void secp256k1_sha256_write(secp256k1_sha256 *hash, const unsigned char *data, size_t len) {
+static void secp256r1_sha256_write(secp256r1_sha256 *hash, const unsigned char *data, size_t len) {
     size_t bufsize = hash->bytes & 0x3F;
     hash->bytes += len;
     VERIFY_CHECK(hash->bytes >= len);
@@ -133,7 +133,7 @@ static void secp256k1_sha256_write(secp256k1_sha256 *hash, const unsigned char *
         memcpy(hash->buf + bufsize, data, chunk_len);
         data += chunk_len;
         len -= chunk_len;
-        secp256k1_sha256_transform(hash->s, hash->buf);
+        secp256r1_sha256_transform(hash->s, hash->buf);
         bufsize = 0;
     }
     if (len) {
@@ -142,78 +142,78 @@ static void secp256k1_sha256_write(secp256k1_sha256 *hash, const unsigned char *
     }
 }
 
-static void secp256k1_sha256_finalize(secp256k1_sha256 *hash, unsigned char *out32) {
+static void secp256r1_sha256_finalize(secp256r1_sha256 *hash, unsigned char *out32) {
     static const unsigned char pad[64] = {0x80};
     unsigned char sizedesc[8];
     int i;
     /* The maximum message size of SHA256 is 2^64-1 bits. */
     VERIFY_CHECK(hash->bytes < ((uint64_t)1 << 61));
-    secp256k1_write_be32(&sizedesc[0], hash->bytes >> 29);
-    secp256k1_write_be32(&sizedesc[4], hash->bytes << 3);
-    secp256k1_sha256_write(hash, pad, 1 + ((119 - (hash->bytes % 64)) % 64));
-    secp256k1_sha256_write(hash, sizedesc, 8);
+    secp256r1_write_be32(&sizedesc[0], hash->bytes >> 29);
+    secp256r1_write_be32(&sizedesc[4], hash->bytes << 3);
+    secp256r1_sha256_write(hash, pad, 1 + ((119 - (hash->bytes % 64)) % 64));
+    secp256r1_sha256_write(hash, sizedesc, 8);
     for (i = 0; i < 8; i++) {
-        secp256k1_write_be32(&out32[4*i], hash->s[i]);
+        secp256r1_write_be32(&out32[4*i], hash->s[i]);
         hash->s[i] = 0;
     }
 }
 
 /* Initializes a sha256 struct and writes the 64 byte string
  * SHA256(tag)||SHA256(tag) into it. */
-static void secp256k1_sha256_initialize_tagged(secp256k1_sha256 *hash, const unsigned char *tag, size_t taglen) {
+static void secp256r1_sha256_initialize_tagged(secp256r1_sha256 *hash, const unsigned char *tag, size_t taglen) {
     unsigned char buf[32];
-    secp256k1_sha256_initialize(hash);
-    secp256k1_sha256_write(hash, tag, taglen);
-    secp256k1_sha256_finalize(hash, buf);
+    secp256r1_sha256_initialize(hash);
+    secp256r1_sha256_write(hash, tag, taglen);
+    secp256r1_sha256_finalize(hash, buf);
 
-    secp256k1_sha256_initialize(hash);
-    secp256k1_sha256_write(hash, buf, 32);
-    secp256k1_sha256_write(hash, buf, 32);
+    secp256r1_sha256_initialize(hash);
+    secp256r1_sha256_write(hash, buf, 32);
+    secp256r1_sha256_write(hash, buf, 32);
 }
 
-static void secp256k1_hmac_sha256_initialize(secp256k1_hmac_sha256 *hash, const unsigned char *key, size_t keylen) {
+static void secp256r1_hmac_sha256_initialize(secp256r1_hmac_sha256 *hash, const unsigned char *key, size_t keylen) {
     size_t n;
     unsigned char rkey[64];
     if (keylen <= sizeof(rkey)) {
         memcpy(rkey, key, keylen);
         memset(rkey + keylen, 0, sizeof(rkey) - keylen);
     } else {
-        secp256k1_sha256 sha256;
-        secp256k1_sha256_initialize(&sha256);
-        secp256k1_sha256_write(&sha256, key, keylen);
-        secp256k1_sha256_finalize(&sha256, rkey);
+        secp256r1_sha256 sha256;
+        secp256r1_sha256_initialize(&sha256);
+        secp256r1_sha256_write(&sha256, key, keylen);
+        secp256r1_sha256_finalize(&sha256, rkey);
         memset(rkey + 32, 0, 32);
     }
 
-    secp256k1_sha256_initialize(&hash->outer);
+    secp256r1_sha256_initialize(&hash->outer);
     for (n = 0; n < sizeof(rkey); n++) {
         rkey[n] ^= 0x5c;
     }
-    secp256k1_sha256_write(&hash->outer, rkey, sizeof(rkey));
+    secp256r1_sha256_write(&hash->outer, rkey, sizeof(rkey));
 
-    secp256k1_sha256_initialize(&hash->inner);
+    secp256r1_sha256_initialize(&hash->inner);
     for (n = 0; n < sizeof(rkey); n++) {
         rkey[n] ^= 0x5c ^ 0x36;
     }
-    secp256k1_sha256_write(&hash->inner, rkey, sizeof(rkey));
+    secp256r1_sha256_write(&hash->inner, rkey, sizeof(rkey));
     memset(rkey, 0, sizeof(rkey));
 }
 
-static void secp256k1_hmac_sha256_write(secp256k1_hmac_sha256 *hash, const unsigned char *data, size_t size) {
-    secp256k1_sha256_write(&hash->inner, data, size);
+static void secp256r1_hmac_sha256_write(secp256r1_hmac_sha256 *hash, const unsigned char *data, size_t size) {
+    secp256r1_sha256_write(&hash->inner, data, size);
 }
 
-static void secp256k1_hmac_sha256_finalize(secp256k1_hmac_sha256 *hash, unsigned char *out32) {
+static void secp256r1_hmac_sha256_finalize(secp256r1_hmac_sha256 *hash, unsigned char *out32) {
     unsigned char temp[32];
-    secp256k1_sha256_finalize(&hash->inner, temp);
-    secp256k1_sha256_write(&hash->outer, temp, 32);
+    secp256r1_sha256_finalize(&hash->inner, temp);
+    secp256r1_sha256_write(&hash->outer, temp, 32);
     memset(temp, 0, 32);
-    secp256k1_sha256_finalize(&hash->outer, out32);
+    secp256r1_sha256_finalize(&hash->outer, out32);
 }
 
 
-static void secp256k1_rfc6979_hmac_sha256_initialize(secp256k1_rfc6979_hmac_sha256 *rng, const unsigned char *key, size_t keylen) {
-    secp256k1_hmac_sha256 hmac;
+static void secp256r1_rfc6979_hmac_sha256_initialize(secp256r1_rfc6979_hmac_sha256 *rng, const unsigned char *key, size_t keylen) {
+    secp256r1_hmac_sha256 hmac;
     static const unsigned char zero[1] = {0x00};
     static const unsigned char one[1] = {0x01};
 
@@ -221,47 +221,47 @@ static void secp256k1_rfc6979_hmac_sha256_initialize(secp256k1_rfc6979_hmac_sha2
     memset(rng->k, 0x00, 32); /* RFC6979 3.2.c. */
 
     /* RFC6979 3.2.d. */
-    secp256k1_hmac_sha256_initialize(&hmac, rng->k, 32);
-    secp256k1_hmac_sha256_write(&hmac, rng->v, 32);
-    secp256k1_hmac_sha256_write(&hmac, zero, 1);
-    secp256k1_hmac_sha256_write(&hmac, key, keylen);
-    secp256k1_hmac_sha256_finalize(&hmac, rng->k);
-    secp256k1_hmac_sha256_initialize(&hmac, rng->k, 32);
-    secp256k1_hmac_sha256_write(&hmac, rng->v, 32);
-    secp256k1_hmac_sha256_finalize(&hmac, rng->v);
+    secp256r1_hmac_sha256_initialize(&hmac, rng->k, 32);
+    secp256r1_hmac_sha256_write(&hmac, rng->v, 32);
+    secp256r1_hmac_sha256_write(&hmac, zero, 1);
+    secp256r1_hmac_sha256_write(&hmac, key, keylen);
+    secp256r1_hmac_sha256_finalize(&hmac, rng->k);
+    secp256r1_hmac_sha256_initialize(&hmac, rng->k, 32);
+    secp256r1_hmac_sha256_write(&hmac, rng->v, 32);
+    secp256r1_hmac_sha256_finalize(&hmac, rng->v);
 
     /* RFC6979 3.2.f. */
-    secp256k1_hmac_sha256_initialize(&hmac, rng->k, 32);
-    secp256k1_hmac_sha256_write(&hmac, rng->v, 32);
-    secp256k1_hmac_sha256_write(&hmac, one, 1);
-    secp256k1_hmac_sha256_write(&hmac, key, keylen);
-    secp256k1_hmac_sha256_finalize(&hmac, rng->k);
-    secp256k1_hmac_sha256_initialize(&hmac, rng->k, 32);
-    secp256k1_hmac_sha256_write(&hmac, rng->v, 32);
-    secp256k1_hmac_sha256_finalize(&hmac, rng->v);
+    secp256r1_hmac_sha256_initialize(&hmac, rng->k, 32);
+    secp256r1_hmac_sha256_write(&hmac, rng->v, 32);
+    secp256r1_hmac_sha256_write(&hmac, one, 1);
+    secp256r1_hmac_sha256_write(&hmac, key, keylen);
+    secp256r1_hmac_sha256_finalize(&hmac, rng->k);
+    secp256r1_hmac_sha256_initialize(&hmac, rng->k, 32);
+    secp256r1_hmac_sha256_write(&hmac, rng->v, 32);
+    secp256r1_hmac_sha256_finalize(&hmac, rng->v);
     rng->retry = 0;
 }
 
-static void secp256k1_rfc6979_hmac_sha256_generate(secp256k1_rfc6979_hmac_sha256 *rng, unsigned char *out, size_t outlen) {
+static void secp256r1_rfc6979_hmac_sha256_generate(secp256r1_rfc6979_hmac_sha256 *rng, unsigned char *out, size_t outlen) {
     /* RFC6979 3.2.h. */
     static const unsigned char zero[1] = {0x00};
     if (rng->retry) {
-        secp256k1_hmac_sha256 hmac;
-        secp256k1_hmac_sha256_initialize(&hmac, rng->k, 32);
-        secp256k1_hmac_sha256_write(&hmac, rng->v, 32);
-        secp256k1_hmac_sha256_write(&hmac, zero, 1);
-        secp256k1_hmac_sha256_finalize(&hmac, rng->k);
-        secp256k1_hmac_sha256_initialize(&hmac, rng->k, 32);
-        secp256k1_hmac_sha256_write(&hmac, rng->v, 32);
-        secp256k1_hmac_sha256_finalize(&hmac, rng->v);
+        secp256r1_hmac_sha256 hmac;
+        secp256r1_hmac_sha256_initialize(&hmac, rng->k, 32);
+        secp256r1_hmac_sha256_write(&hmac, rng->v, 32);
+        secp256r1_hmac_sha256_write(&hmac, zero, 1);
+        secp256r1_hmac_sha256_finalize(&hmac, rng->k);
+        secp256r1_hmac_sha256_initialize(&hmac, rng->k, 32);
+        secp256r1_hmac_sha256_write(&hmac, rng->v, 32);
+        secp256r1_hmac_sha256_finalize(&hmac, rng->v);
     }
 
     while (outlen > 0) {
-        secp256k1_hmac_sha256 hmac;
+        secp256r1_hmac_sha256 hmac;
         int now = outlen;
-        secp256k1_hmac_sha256_initialize(&hmac, rng->k, 32);
-        secp256k1_hmac_sha256_write(&hmac, rng->v, 32);
-        secp256k1_hmac_sha256_finalize(&hmac, rng->v);
+        secp256r1_hmac_sha256_initialize(&hmac, rng->k, 32);
+        secp256r1_hmac_sha256_write(&hmac, rng->v, 32);
+        secp256r1_hmac_sha256_finalize(&hmac, rng->v);
         if (now > 32) {
             now = 32;
         }
@@ -273,7 +273,7 @@ static void secp256k1_rfc6979_hmac_sha256_generate(secp256k1_rfc6979_hmac_sha256
     rng->retry = 1;
 }
 
-static void secp256k1_rfc6979_hmac_sha256_finalize(secp256k1_rfc6979_hmac_sha256 *rng) {
+static void secp256r1_rfc6979_hmac_sha256_finalize(secp256r1_rfc6979_hmac_sha256 *rng) {
     memset(rng->k, 0, 32);
     memset(rng->v, 0, 32);
     rng->retry = 0;
@@ -287,4 +287,4 @@ static void secp256k1_rfc6979_hmac_sha256_finalize(secp256k1_rfc6979_hmac_sha256
 #undef Maj
 #undef Ch
 
-#endif /* SECP256K1_HASH_IMPL_H */
+#endif /* SECP256R1_HASH_IMPL_H */

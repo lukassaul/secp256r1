@@ -4,18 +4,18 @@
  * file COPYING or https://www.opensource.org/licenses/mit-license.php.*
  ***********************************************************************/
 
-#ifndef SECP256K1_MODULE_SCHNORRSIG_BENCH_H
-#define SECP256K1_MODULE_SCHNORRSIG_BENCH_H
+#ifndef SECP256R1_MODULE_SCHNORRSIG_BENCH_H
+#define SECP256R1_MODULE_SCHNORRSIG_BENCH_H
 
-#include "../../../include/secp256k1_schnorrsig.h"
+#include "../../../include/secp256r1_schnorrsig.h"
 
 #define MSGLEN 32
 
 typedef struct {
-    secp256k1_context *ctx;
+    secp256r1_context *ctx;
     int n;
 
-    const secp256k1_keypair **keypairs;
+    const secp256r1_keypair **keypairs;
     const unsigned char **pk;
     const unsigned char **sigs;
     const unsigned char **msgs;
@@ -30,7 +30,7 @@ void bench_schnorrsig_sign(void* arg, int iters) {
     for (i = 0; i < iters; i++) {
         msg[0] = i;
         msg[1] = i >> 8;
-        CHECK(secp256k1_schnorrsig_sign_custom(data->ctx, sig, msg, MSGLEN, data->keypairs[i], NULL));
+        CHECK(secp256r1_schnorrsig_sign_custom(data->ctx, sig, msg, MSGLEN, data->keypairs[i], NULL));
     }
 }
 
@@ -39,9 +39,9 @@ void bench_schnorrsig_verify(void* arg, int iters) {
     int i;
 
     for (i = 0; i < iters; i++) {
-        secp256k1_xonly_pubkey pk;
-        CHECK(secp256k1_xonly_pubkey_parse(data->ctx, &pk, data->pk[i]) == 1);
-        CHECK(secp256k1_schnorrsig_verify(data->ctx, data->sigs[i], data->msgs[i], MSGLEN, &pk));
+        secp256r1_xonly_pubkey pk;
+        CHECK(secp256r1_xonly_pubkey_parse(data->ctx, &pk, data->pk[i]) == 1);
+        CHECK(secp256r1_schnorrsig_verify(data->ctx, data->sigs[i], data->msgs[i], MSGLEN, &pk));
     }
 }
 
@@ -50,8 +50,8 @@ void run_schnorrsig_bench(int iters, int argc, char** argv) {
     bench_schnorrsig_data data;
     int d = argc == 1;
 
-    data.ctx = secp256k1_context_create(SECP256K1_CONTEXT_VERIFY | SECP256K1_CONTEXT_SIGN);
-    data.keypairs = (const secp256k1_keypair **)malloc(iters * sizeof(secp256k1_keypair *));
+    data.ctx = secp256r1_context_create(SECP256R1_CONTEXT_VERIFY | SECP256R1_CONTEXT_SIGN);
+    data.keypairs = (const secp256r1_keypair **)malloc(iters * sizeof(secp256r1_keypair *));
     data.pk = (const unsigned char **)malloc(iters * sizeof(unsigned char *));
     data.msgs = (const unsigned char **)malloc(iters * sizeof(unsigned char *));
     data.sigs = (const unsigned char **)malloc(iters * sizeof(unsigned char *));
@@ -61,9 +61,9 @@ void run_schnorrsig_bench(int iters, int argc, char** argv) {
         unsigned char sk[32];
         unsigned char *msg = (unsigned char *)malloc(MSGLEN);
         unsigned char *sig = (unsigned char *)malloc(64);
-        secp256k1_keypair *keypair = (secp256k1_keypair *)malloc(sizeof(*keypair));
+        secp256r1_keypair *keypair = (secp256r1_keypair *)malloc(sizeof(*keypair));
         unsigned char *pk_char = (unsigned char *)malloc(32);
-        secp256k1_xonly_pubkey pk;
+        secp256r1_xonly_pubkey pk;
         msg[0] = sk[0] = i;
         msg[1] = sk[1] = i >> 8;
         msg[2] = sk[2] = i >> 16;
@@ -76,10 +76,10 @@ void run_schnorrsig_bench(int iters, int argc, char** argv) {
         data.msgs[i] = msg;
         data.sigs[i] = sig;
 
-        CHECK(secp256k1_keypair_create(data.ctx, keypair, sk));
-        CHECK(secp256k1_schnorrsig_sign_custom(data.ctx, sig, msg, MSGLEN, keypair, NULL));
-        CHECK(secp256k1_keypair_xonly_pub(data.ctx, &pk, NULL, keypair));
-        CHECK(secp256k1_xonly_pubkey_serialize(data.ctx, pk_char, &pk) == 1);
+        CHECK(secp256r1_keypair_create(data.ctx, keypair, sk));
+        CHECK(secp256r1_schnorrsig_sign_custom(data.ctx, sig, msg, MSGLEN, keypair, NULL));
+        CHECK(secp256r1_keypair_xonly_pub(data.ctx, &pk, NULL, keypair));
+        CHECK(secp256r1_xonly_pubkey_serialize(data.ctx, pk_char, &pk) == 1);
     }
 
     if (d || have_flag(argc, argv, "schnorrsig") || have_flag(argc, argv, "sign") || have_flag(argc, argv, "schnorrsig_sign")) run_benchmark("schnorrsig_sign", bench_schnorrsig_sign, NULL, NULL, (void *) &data, 10, iters);
@@ -98,7 +98,7 @@ void run_schnorrsig_bench(int iters, int argc, char** argv) {
     free((void *)data.msgs);
     free((void *)data.sigs);
 
-    secp256k1_context_destroy(data.ctx);
+    secp256r1_context_destroy(data.ctx);
 }
 
 #endif

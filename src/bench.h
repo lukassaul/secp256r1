@@ -4,8 +4,8 @@
  * file COPYING or https://www.opensource.org/licenses/mit-license.php.*
  ***********************************************************************/
 
-#ifndef SECP256K1_BENCH_H
-#define SECP256K1_BENCH_H
+#ifndef SECP256R1_BENCH_H
+#define SECP256R1_BENCH_H
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -168,7 +168,7 @@ int have_invalid_args(int argc, char** argv, char** valid_args, size_t n) {
 }
 
 int get_iters(int default_iters) {
-    char* env = getenv("SECP256K1_BENCH_ITERS");
+    char* env = getenv("SECP256R1_BENCH_ITERS");
     if (env) {
         return strtol(env, NULL, 0);
     } else {
@@ -185,4 +185,4 @@ void print_output_table_header_row(void) {
     printf("\n");
 }
 
-#endif /* SECP256K1_BENCH_H */
+#endif /* SECP256R1_BENCH_H */
