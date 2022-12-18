@@ -2,17 +2,15 @@ libsecp256r1
 ============
 Current status:  No commits yet.  Do not use.  
 
-So yes, what you see is all the underhanded extra power rangers cruft plus all the backdoored NIST super secret weak curve parameters, with a little extra OpenSSL colaborator hacks sprinkled on top as a salt.  
+So yes, what you see is all the underhanded now with more LOC power rangers cruft plus all the supposedly potentially backdoored NIST curve parameters, with a little extra OpenSSL colaborator hacks sprinkled on top as a salt.  
 
 C library for ECDSA signatures and secret/public key operations on curve secp256r1.
 
-The goal here is to use this as a wrapper for P256 operations when working with projects that currently use the koblitz curve that was lying around, because so much satoshi codebase coinware uses that library which will not be named.
+The goal here is to use this as a wrapper for P256 operations when working with projects that currently use the koblitz curve that was lying around, because so much satoshi codebase coinware uses libsecp25k1.
 
-Most of the interesting part of the libsecp256k1 library is a more efficient method of point multiplication which enables fast verification of signatures using the same koblitz trickery that r1 curve users are trying to avoid.  
+Most of the interesting part of the libsecp256k1 library is a more efficient method of point multiplication which enables fast verification of signatures using the same koblitz trickery that r1 curve users are trying to avoid.  This stuff will be surgically snipped out to some extent but with no guarantee that remaining pieces could metastatize.    
 
-
-
-
+C'est en faisant n'importe quoi qu'un devient n'importe qui.  
 
 
 
